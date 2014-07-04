@@ -1,0 +1,22 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = 'budget.Crawler'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+jar {
+    baseName = 'budget-crawler'
+    version =  '0.1.0'
+}
+
+dependencies {
+    compile 'org.seleniumhq.selenium:selenium-java:2.+'
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.11'
+}
