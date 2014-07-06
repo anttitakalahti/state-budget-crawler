@@ -23,9 +23,10 @@ public class Crawler {
 
         Budget budget = new Budget(driver.getTitle(), 2014, URL);
 
-        budget.setIncome(Income.parseIncomeFromWebElement(contentWrappers.get(0), null));
+        budget.setIncome(Income.parseIncomeFromWebElement(contentWrappers.get(0)));
         budget.setExpenditure(Expenditure.parseExpenditureFromWebElement(contentWrappers.get(1), null));
 
+        makeSureCalculatedSumsMatch(budget);
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
@@ -35,5 +36,16 @@ public class Crawler {
         System.out.println(stringWriter.toString());
 
         driver.quit();
+    }
+
+    private static void makeSureCalculatedSumsMatch(Budget budget) {
+        Long totalIncome = 0L;
+        for (StructuredMoneyObject income : budget.getIncome().getConsistsOf()) {
+              totalIncome += income.getTotalInEuros();
+        }
+        if (totalIncome.longValue() != budget.getIncome().getTotalInEuros().longValue()) {
+            System.out.println("SUMS DON'T MATCH!");
+            System.exit(-1);
+        }
     }
 }

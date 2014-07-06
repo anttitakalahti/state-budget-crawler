@@ -1,5 +1,8 @@
 package budget;
 
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,19 +12,19 @@ public abstract class StructuredMoneyObject {
     private int level;
     private int code;
     private String url;
-    private Long totalInThousandsOfEuros;
-    private List<Expenditure> consistsOf;
+    private Long totalInEuros;
+    private List<StructuredMoneyObject> consistsOf;
 
-    public StructuredMoneyObject(String title, int level, int code, String url, Long totalInThousandsOfEuros) {
+    public StructuredMoneyObject(String title, int level, int code, String url, Long totalInEuros) {
         this.title = title;
         this.level = level;
         this.code = code;
         this.url = url;
-        this.totalInThousandsOfEuros = totalInThousandsOfEuros;
+        this.totalInEuros = totalInEuros;
         consistsOf = new ArrayList<>();
     }
 
-    public void setConsistsOf(List<Expenditure> consistsOf) {
+    public void setConsistsOf(List<StructuredMoneyObject> consistsOf) {
         this.consistsOf = consistsOf;
     }
 
@@ -41,12 +44,20 @@ public abstract class StructuredMoneyObject {
         return url;
     }
 
-    public Long getTotalInThousandsOfEuros() {
-        return totalInThousandsOfEuros;
+    public Long getTotalInEuros() {
+        return totalInEuros;
     }
 
-    public List<Expenditure> getConsistsOf() {
+    public List<StructuredMoneyObject> getConsistsOf() {
         return consistsOf;
+    }
+
+    public static int getLevel(WebElement td) {
+        if (td.findElements(By.tagName("a")).isEmpty()) { return 0; }
+        if (td.getAttribute("colspan") != null) { return 1; }
+
+
+        return 2;
     }
 
 }
