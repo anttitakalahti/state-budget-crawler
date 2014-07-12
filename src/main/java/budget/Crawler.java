@@ -50,6 +50,7 @@ public class Crawler {
         Long total = 0L;
         for (StructuredMoneyObject child : structuredMoneyObject.getConsistsOf()) {
             total += child.getTotalInEuros();
+            calculateSumOfChildren(child);
         }
         if (total.longValue() != structuredMoneyObject.getTotalInEuros().longValue()) {
             System.out.println("SUMS DON'T MATCH! Expected: " + structuredMoneyObject.getTotalInEuros() + " but calculated: " + total);
