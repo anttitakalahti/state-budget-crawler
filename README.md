@@ -5,6 +5,8 @@ Will convert the silly HTML into pretty JSON data.
 
 URL for 2014 data: http://budjetti.vm.fi/indox/sisalto.jsp?year=2014&lang=fi&maindoc=/2014/aky/aky.xml&opennode=0:1:5:
 
+Finished JSON: https://raw.githubusercontent.com/anttitakalahti/state-budget-crawler/master/state-budget-2014.json
+
 ## Prerequisites
 
 1. brew install gradle
