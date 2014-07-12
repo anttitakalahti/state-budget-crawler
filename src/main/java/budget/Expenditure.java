@@ -8,6 +8,8 @@ public class Expenditure extends StructuredMoneyObject {
     }
 
     public static Expenditure parseExpenditureFromWebElement(WebElement webElement, Expenditure parent) {
-        return new Expenditure("MÄÄRÄRAHAT", 0, 0, "", new Long("54583994000"));
+        Expenditure expenditure = new Expenditure("MÄÄRÄRAHAT", 0, 0, "", new Long("54583994000"));
+        expenditure.setConsistsOf(parseChildren(webElement, 0));
+        return expenditure;
     }
 }

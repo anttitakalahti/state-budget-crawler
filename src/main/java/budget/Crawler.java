@@ -39,12 +39,17 @@ public class Crawler {
     }
 
     private static void makeSureCalculatedSumsMatch(Budget budget) {
-        Long totalIncome = 0L;
-        for (StructuredMoneyObject income : budget.getIncome().getConsistsOf()) {
-              totalIncome += income.getTotalInEuros();
+        calculateSumOfChildren(budget.getIncome().getTotalInEuros(), budget.getIncome().getConsistsOf());
+        calculateSumOfChildren(budget.getExpenditure().getTotalInEuros(), budget.getExpenditure().getConsistsOf());
+    }
+
+    private static void calculateSumOfChildren(Long totalInEuros, List<StructuredMoneyObject> consistsOf) {
+        Long total = 0L;
+        for (StructuredMoneyObject child : consistsOf) {
+            total += child.getTotalInEuros();
         }
-        if (totalIncome.longValue() != budget.getIncome().getTotalInEuros().longValue()) {
-            System.out.println("SUMS DON'T MATCH!");
+        if (total.longValue() != totalInEuros.longValue()) {
+            System.out.println("SUMS DON'T MATCH! Expected: " + totalInEuros + " but calculated: " + total);
             System.exit(-1);
         }
     }
