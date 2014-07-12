@@ -61,7 +61,7 @@ public class Crawler {
                     "Expected: " + structuredMoneyObject.getTotalInEuros() + " but calculated: " + total);
 
             for (StructuredMoneyObject child : structuredMoneyObject.getConsistsOf()) {
-                System.out.println(String.format("level: %d, code: %d, title %s, euros: %d", child.getLevel(), child.getCode(), child.getTitle(), child.getTotalInEuros()));
+                System.out.println(String.format("  level: %d, code: %d, title %s, euros: %d", child.getLevel(), child.getCode(), child.getTitle(), child.getTotalInEuros()));
             }
 
 

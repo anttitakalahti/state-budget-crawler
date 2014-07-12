@@ -75,35 +75,30 @@ public abstract class StructuredMoneyObject {
         return 3;
     }
 
-    public static List<StructuredMoneyObject> parseChildren(WebElement webElement, int parentLevel, int parentCode, boolean isIncome) {
+    public static List<StructuredMoneyObject> parseChildren(WebElement webElement, int parentLevel, int parentCode, int grandParentCode, boolean isIncome) {
         List<StructuredMoneyObject> children = new ArrayList<>();
 
         int currentParent = -1;
+        int currentGrandParent = -1;
 
         for (WebElement tr : webElement.findElements(By.tagName("tr"))) {
             List<WebElement> tdList = tr.findElements(By.tagName("td"));
 
             int level = getLevel(tdList.get(0));
 
-
-            if (level == parentLevel) {
+            if (parentLevel == 2 && level == 1) {
+                currentGrandParent = getIncome(tdList, level).getCode();
+            } else if (level == parentLevel) {
                 currentParent = getIncome(tdList, level).getCode();
-            }
-
-            if (level == (parentLevel + 1) && currentParent == parentCode) {
+            } else if (level == (parentLevel + 1) && currentParent == parentCode && (level < 3 || currentGrandParent == grandParentCode)) {
                 Income income = getIncome(tdList, level);
 
                 if (isIncome) {
-                    if (level == 1) { // we need to know more parents to judge if particular income is relevant
-                                      // ([11.]01. Tulon ja varallisuuden perusteella kannettavat verot and [13.]01. Korkotulot
-                        income.setConsistsOf(parseChildren(webElement, level, income.getCode(), isIncome));
-                    }
+                    income.setConsistsOf(parseChildren(webElement, level, income.getCode(), parentCode, isIncome));
                     children.add(income);
                 } else {
                     Expenditure expenditure = new Expenditure(income);
-                    if (level == 1) {
-                        expenditure.setConsistsOf(parseChildren(webElement, level, expenditure.getCode(), isIncome));
-                    }
+                    expenditure.setConsistsOf(parseChildren(webElement, level, expenditure.getCode(), parentCode, isIncome));
                     children.add(expenditure);
                 }
             }

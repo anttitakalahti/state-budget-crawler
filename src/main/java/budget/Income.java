@@ -13,7 +13,7 @@ public class Income extends StructuredMoneyObject {
 
     public static Income parseIncomeFromWebElement(WebElement webElement) {
         Income income = new Income("TULOARVIOT", 0, 0, "", new Long("54583994000"));
-        income.setConsistsOf(parseChildren(webElement, 0, 0, true));
+        income.setConsistsOf(parseChildren(webElement, 0, 0, 0, true));
         return income;
     }
 }
