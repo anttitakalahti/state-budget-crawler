@@ -52,56 +52,86 @@ public abstract class StructuredMoneyObject {
         return consistsOf;
     }
 
+    public void setTotalInEuros(Long totalInEuros) {
+        this.totalInEuros = totalInEuros;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public void setCode(Integer code) {
+        this.code = code;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     public static int getLevel(WebElement td) {
         if (td.findElements(By.tagName("a")).isEmpty()) { return 0; }
         if (td.getAttribute("colspan") != null) { return 1; }
-
-
         return 2;
     }
 
-    public static List<StructuredMoneyObject> parseChildren(WebElement webElement, int parentLevel) {
+    public static List<StructuredMoneyObject> parseChildren(WebElement webElement, int parentLevel, int parentCode, boolean isIncome) {
         List<StructuredMoneyObject> children = new ArrayList<>();
+
+        int currentParent = -1;
 
         for (WebElement tr : webElement.findElements(By.tagName("tr"))) {
             List<WebElement> tdList = tr.findElements(By.tagName("td"));
 
-            String title;
-            int code;
             int level = getLevel(tdList.get(0));
-            String url;
-            Long totalInEuros;
 
-            if (level == (parentLevel + 1)) {
-                WebElement linkElement = tdList.get(0).findElement(By.tagName("a"));
-                url = linkElement.getAttribute("href");
 
-                List<WebElement> spans = linkElement.findElements(By.tagName("span"));
+            if (level == parentLevel) {
+                currentParent = getIncome(tdList, level).getCode();
+                System.out.println("Current Parent: " + currentParent);
+            }
 
-                if (spans.isEmpty()) {
-                    code = new Integer(linkElement.getText().substring(0, 2));
-                    title = linkElement.getText().substring(4);
-                } else if (spans.size() == 2) {
-                    code = new Integer(linkElement.getText().substring(0, 2));
-                    title = linkElement.getText().substring(4);
+            if (level == (parentLevel + 1) && currentParent == parentCode) {
+                Income income = getIncome(tdList, level);
+
+                if (isIncome) {
+                    children.add(income);
                 } else {
-                    code = new Integer(spans.get(0).getText().replace(".", "").replaceFirst("^0+(?!$)", ""));
-                    title = spans.get(1).getText();
+                    Expenditure expenditure = new Expenditure(income);
+                    children.add(expenditure);
                 }
-
-                WebElement sumTd = tdList.get(tdList.size() - 1);
-                if (sumTd.getAttribute("total") != null) {
-                    totalInEuros = new Long(sumTd.getAttribute("total"));
-                } else {
-                    totalInEuros = new Long(sumTd.findElements(By.tagName("span")).get(0).getText().replace(" ", ""));
-                }
-
-                Income income = new Income(title, level, code, url, totalInEuros);
-                children.add(income);
             }
         }
 
         return children;
     }
 
+    private static Income getIncome(List<WebElement> tdList, int level) {
+        Income income = new Income("", level, 0, "", 0L);
+
+        if (level == 0) { return income; }
+
+        WebElement linkElement = tdList.get(0).findElement(By.tagName("a"));
+        income.setUrl(linkElement.getAttribute("href"));
+
+        List<WebElement> spans = linkElement.findElements(By.tagName("span"));
+
+        if (spans.isEmpty()) {
+            income.setCode(new Integer(linkElement.getText().substring(0, 2)));
+            income.setTitle(linkElement.getText().substring(4));
+        } else if (spans.size() == 2) {
+            income.setCode(new Integer(linkElement.getText().substring(0, 2)));
+            income.setTitle(linkElement.getText().substring(4));
+        } else {
+            income.setCode(new Integer(spans.get(0).getText().replace(".", "").replaceFirst("^0+(?!$)", "")));
+            income.setTitle(spans.get(1).getText());
+        }
+
+        WebElement sumTd = tdList.get(tdList.size() - 1);
+        if (sumTd.getAttribute("total") != null) {
+            income.setTotalInEuros(new Long(sumTd.getAttribute("total")));
+        } else {
+            income.setTotalInEuros(new Long(sumTd.findElements(By.tagName("span")).get(0).getText().replace(" ", "")));
+        }
+        return income;
+    }
 }
