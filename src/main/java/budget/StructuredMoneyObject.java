@@ -94,7 +94,8 @@ public abstract class StructuredMoneyObject {
                 Income income = getIncome(tdList, level);
 
                 if (isIncome) {
-                    if (level == 1) {
+                    if (level == 1) { // we need to know more parents to judge if particular income is relevant
+                                      // ([11.]01. Tulon ja varallisuuden perusteella kannettavat verot and [13.]01. Korkotulot
                         income.setConsistsOf(parseChildren(webElement, level, income.getCode(), isIncome));
                     }
                     children.add(income);
