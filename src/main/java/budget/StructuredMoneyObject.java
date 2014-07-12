@@ -94,11 +94,11 @@ public abstract class StructuredMoneyObject {
                 Income income = getIncome(tdList, level);
 
                 if (isIncome) {
-                    income.setConsistsOf(parseChildren(webElement, level, income.getCode(), parentCode, isIncome));
+                    if (level < 3) { income.setConsistsOf(parseChildren(webElement, level, income.getCode(), parentCode, isIncome)); }
                     children.add(income);
                 } else {
                     Expenditure expenditure = new Expenditure(income);
-                    expenditure.setConsistsOf(parseChildren(webElement, level, expenditure.getCode(), parentCode, isIncome));
+                    if (level < 3) { expenditure.setConsistsOf(parseChildren(webElement, level, expenditure.getCode(), parentCode, isIncome)); }
                     children.add(expenditure);
                 }
             }
