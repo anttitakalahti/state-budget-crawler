@@ -23,14 +23,17 @@ public class Budget {
         this.expenditure = expenditure;
     }
 
+    @SuppressWarnings("unused")
     public String getTitle() {
         return title;
     }
 
+    @SuppressWarnings("unused")
     public int getYear() {
         return year;
     }
 
+    @SuppressWarnings("unused")
     public String getUrl() {
         return url;
     }
