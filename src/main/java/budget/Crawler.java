@@ -46,6 +46,7 @@ public class Crawler {
     }
 
     private static void calculateSumOfChildren(StructuredMoneyObject structuredMoneyObject) {
+        if (structuredMoneyObject.getConsistsOf().isEmpty()) { return; }
         Long total = 0L;
         for (StructuredMoneyObject child : structuredMoneyObject.getConsistsOf()) {
             total += child.getTotalInEuros();
