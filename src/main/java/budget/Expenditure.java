@@ -7,7 +7,7 @@ public class Expenditure extends StructuredMoneyObject {
         super(title, level, code, url, totalInThousandsOfEuros);
     }
 
-    public static Expenditure parseExpenditureFromWebElement(WebElement webElement, Expenditure parent) {
+    public static Expenditure parseExpenditureFromWebElement(WebElement webElement) {
         Expenditure expenditure = new Expenditure("MÄÄRÄRAHAT", 0, 0, "", new Long("54583994000"));
         expenditure.setConsistsOf(parseChildren(webElement, 0));
         return expenditure;

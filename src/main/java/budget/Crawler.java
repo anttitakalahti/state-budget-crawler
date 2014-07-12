@@ -24,7 +24,7 @@ public class Crawler {
         Budget budget = new Budget(driver.getTitle(), 2014, URL);
 
         budget.setIncome(Income.parseIncomeFromWebElement(contentWrappers.get(0)));
-        budget.setExpenditure(Expenditure.parseExpenditureFromWebElement(contentWrappers.get(1), null));
+        budget.setExpenditure(Expenditure.parseExpenditureFromWebElement(contentWrappers.get(1)));
 
         makeSureCalculatedSumsMatch(budget);
 
