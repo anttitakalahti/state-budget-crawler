@@ -71,7 +71,8 @@ public abstract class StructuredMoneyObject {
     public static int getLevel(WebElement td) {
         if (td.findElements(By.tagName("a")).isEmpty()) { return 0; }
         if (td.getAttribute("colspan") != null) { return 1; }
-        return 2;
+        if (!td.findElements(By.tagName("span")).isEmpty()) { return 2; }
+        return 3;
     }
 
     public static List<StructuredMoneyObject> parseChildren(WebElement webElement, int parentLevel, int parentCode, boolean isIncome) {
@@ -87,16 +88,21 @@ public abstract class StructuredMoneyObject {
 
             if (level == parentLevel) {
                 currentParent = getIncome(tdList, level).getCode();
-                System.out.println("Current Parent: " + currentParent);
             }
 
             if (level == (parentLevel + 1) && currentParent == parentCode) {
                 Income income = getIncome(tdList, level);
 
                 if (isIncome) {
+                    if (level == 1) {
+                        income.setConsistsOf(parseChildren(webElement, level, income.getCode(), isIncome));
+                    }
                     children.add(income);
                 } else {
                     Expenditure expenditure = new Expenditure(income);
+                    if (level == 1) {
+                        expenditure.setConsistsOf(parseChildren(webElement, level, expenditure.getCode(), isIncome));
+                    }
                     children.add(expenditure);
                 }
             }
@@ -129,6 +135,8 @@ public abstract class StructuredMoneyObject {
         WebElement sumTd = tdList.get(tdList.size() - 1);
         if (sumTd.getAttribute("total") != null) {
             income.setTotalInEuros(new Long(sumTd.getAttribute("total")));
+        } else if (sumTd.getAttribute("type") != null) {
+            income.setTotalInEuros(new Long(sumTd.getText().replace(" ", "") + "000"));
         } else {
             income.setTotalInEuros(new Long(sumTd.findElements(By.tagName("span")).get(0).getText().replace(" ", "")));
         }

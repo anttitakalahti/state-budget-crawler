@@ -53,7 +53,18 @@ public class Crawler {
             calculateSumOfChildren(child);
         }
         if (total.longValue() != structuredMoneyObject.getTotalInEuros().longValue()) {
-            System.out.println("SUMS DON'T MATCH! Expected: " + structuredMoneyObject.getTotalInEuros() + " but calculated: " + total);
+            System.out.println(
+                    "SUMS DON'T MATCH FOR " + structuredMoneyObject.getClass().getName() + " " +
+                    "WITH LEVEL: " + structuredMoneyObject.getLevel() + " " +
+                    "AND CODE: " + structuredMoneyObject.getCode() + " " +
+                    "AND TITLE: " + structuredMoneyObject.getTitle() + "! " +
+                    "Expected: " + structuredMoneyObject.getTotalInEuros() + " but calculated: " + total);
+
+            for (StructuredMoneyObject child : structuredMoneyObject.getConsistsOf()) {
+                System.out.println(String.format("level: %d, code: %d, title %s, euros: %d", child.getLevel(), child.getCode(), child.getTitle(), child.getTotalInEuros()));
+            }
+
+
             System.exit(-1);
         }
     }

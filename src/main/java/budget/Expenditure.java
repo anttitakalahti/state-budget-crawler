@@ -3,12 +3,16 @@ package budget;
 import org.openqa.selenium.WebElement;
 
 public class Expenditure extends StructuredMoneyObject {
-    public Expenditure(String title, int level, int code, String url, Long totalInThousandsOfEuros) {
-        super(title, level, code, url, totalInThousandsOfEuros);
+    public Expenditure(String title, int level, int code, String url, Long totalInEuros) {
+        super(title, level, code, url, totalInEuros);
     }
 
     public Expenditure(Income income) {
         this(income.getTitle(), income.getLevel(), income.getCode(), income.getUrl(), income.getTotalInEuros());
+    }
+
+    public String toString() {
+        return String.format("Expenditure - title: %s, level: %d, code: %d, url: %s, total: %d", getTitle(), getLevel(), getCode(), getUrl(), getTotalInEuros());
     }
 
     public static Expenditure parseExpenditureFromWebElement(WebElement webElement) {
