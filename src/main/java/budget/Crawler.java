@@ -18,7 +18,18 @@ public class Crawler {
     public static void main(String[] args) throws IOException {
         HtmlUnitDriver driver = new HtmlUnitDriver();
 
+        Budget budget = getBudgetWithIncomeAndExpenditure(driver);
+
+        makeSureCalculatedSumsMatchReportedValues(budget);
+
+        printJSONtoSystemOut(budget);
+
+        driver.quit();
+    }
+
+    private static Budget getBudgetWithIncomeAndExpenditure(HtmlUnitDriver driver) {
         driver.get(URL);
+
         List<WebElement> contentWrappers = driver.findElements(By.className("Taulukko_perus"));
 
         Budget budget = new Budget(driver.getTitle(), 2014, URL);
@@ -26,31 +37,31 @@ public class Crawler {
         budget.setIncome(Income.parseIncomeFromWebElement(contentWrappers.get(0)));
         budget.setExpenditure(Expenditure.parseExpenditureFromWebElement(contentWrappers.get(1)));
 
-        makeSureCalculatedSumsMatch(budget);
+        return budget;
+    }
 
+    private static void makeSureCalculatedSumsMatchReportedValues(Budget budget) {
+        calculateSumOfChildren(budget.getIncome());
+        calculateSumOfChildren(budget.getExpenditure());
+    }
+
+    private static void calculateSumOfChildren(StructuredMoneyObject structuredMoneyObject) {
+        Long total = 0L;
+        for (StructuredMoneyObject child : structuredMoneyObject.getConsistsOf()) {
+            total += child.getTotalInEuros();
+        }
+        if (total.longValue() != structuredMoneyObject.getTotalInEuros().longValue()) {
+            System.out.println("SUMS DON'T MATCH! Expected: " + structuredMoneyObject.getTotalInEuros() + " but calculated: " + total);
+            System.exit(-1);
+        }
+    }
+
+    private static void printJSONtoSystemOut(Budget budget) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
 
         StringWriter stringWriter = new StringWriter();
         objectMapper.writeValue(stringWriter, budget);
         System.out.println(stringWriter.toString());
-
-        driver.quit();
-    }
-
-    private static void makeSureCalculatedSumsMatch(Budget budget) {
-        calculateSumOfChildren(budget.getIncome().getTotalInEuros(), budget.getIncome().getConsistsOf());
-        calculateSumOfChildren(budget.getExpenditure().getTotalInEuros(), budget.getExpenditure().getConsistsOf());
-    }
-
-    private static void calculateSumOfChildren(Long totalInEuros, List<StructuredMoneyObject> consistsOf) {
-        Long total = 0L;
-        for (StructuredMoneyObject child : consistsOf) {
-            total += child.getTotalInEuros();
-        }
-        if (total.longValue() != totalInEuros.longValue()) {
-            System.out.println("SUMS DON'T MATCH! Expected: " + totalInEuros + " but calculated: " + total);
-            System.exit(-1);
-        }
     }
 }
